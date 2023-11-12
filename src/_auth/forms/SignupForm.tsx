@@ -16,11 +16,12 @@ import { SignupValidation } from "@/lib/validation";
 import logo from "../../assets/images/logo (1).svg";
 import Loader from "@/components/ui/shared/Loader";
 import { NavLink } from "react-router-dom";
-import {createUserAccount} from '../../lib/appwrite/api';
-
+import { createUserAccount } from "../../lib/appwrite/api";
+import { useToast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast"
 const SignupForm = () => {
-
-  const isLoading = false
+  const { toast } = useToast();
+  const isLoading = false;
 
   const form = useForm<z.infer<typeof SignupValidation>>({
     resolver: zodResolver(SignupValidation),
@@ -35,8 +36,16 @@ const SignupForm = () => {
   async function onSubmit(values: z.infer<typeof SignupValidation>) {
     const newUser = await createUserAccount(values);
     console.log(newUser);
-  
-    
+    if(!newUser){
+      return toast({
+         variant: "destructive",
+         title: "sign up failed.Please try again.  ",
+        //  action: <ToastAction altText="Try again">Try again</ToastAction>,
+       });
+
+    }
+
+
   }
 
   return (
@@ -109,34 +118,22 @@ const SignupForm = () => {
               </FormItem>
             )}
           />
-          <Button
-          className="shad-button_primary"
-          type="submit">
-
-          {
-            isLoading ?
-
-            (
+          <Button className="shad-button_primary" type="submit">
+            {isLoading ? (
               <div className="flex-center ">
-                <Loader/>  
-               <span className="mx-2"> Loading...</span>
+                <Loader />
+                <span className="mx-2"> Loading...</span>
               </div>
-            )
-
-            :(
+            ) : (
               "Sing up"
-            )
-
-          }
-
-
+            )}
           </Button>
           <p className="text-small-regular text-light-2 text-center mt-2">
             Already have an account ?
-            <NavLink 
-            className='text-primary-500 text-small-semibold ml-1'
-            to={'/Sign-in'}>
-            Log in
+            <NavLink
+              className="text-primary-500 text-small-semibold ml-1"
+              to={"/Sign-in"}>
+              Log in
             </NavLink>
           </p>
         </form>
