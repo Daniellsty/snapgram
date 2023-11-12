@@ -15,14 +15,17 @@ import { Input } from "@/components/ui/input";
 import { SignupValidation } from "@/lib/validation";
 import logo from "../../assets/images/logo (1).svg";
 import Loader from "@/components/ui/shared/Loader";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { createUserAccount } from "../../lib/appwrite/api";
 import { useToast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast"
+import { userCreateUserAccountMutation, userSignInAccount } from "@/lib/react-query/queriesAndMutation";
+import { useUserContext } from "@/context/AuthContext";
 const SignupForm = () => {
   const { toast } = useToast();
-  const isLoading = false;
-
+  const navigate = useNavigate()
+  const {checkAuthUser ,isLoading :isUserLoading  } = useUserContext();
+  
   const form = useForm<z.infer<typeof SignupValidation>>({
     resolver: zodResolver(SignupValidation),
     defaultValues: {
@@ -30,8 +33,14 @@ const SignupForm = () => {
       username: "",
       email: "",
       password: "",
-    },
-  });
+    },  
+  });  
+  
+  
+    const {mutateAsync :createUserAccount ,isLoading : creatingUser} =userCreateUserAccountMutation();
+    
+    const {mutateAsync :signInAccount ,isLoading : signiningUser} =userSignInAccount();
+
 
   async function onSubmit(values: z.infer<typeof SignupValidation>) {
     const newUser = await createUserAccount(values);
@@ -40,13 +49,41 @@ const SignupForm = () => {
       return toast({
          variant: "destructive",
          title: "sign up failed.Please try again.  ",
-        //  action: <ToastAction altText="Try again">Try again</ToastAction>,
-       });
+        //  action: <ToastAction altText="Try again">Try again</ToastAction>, 
+       }); 
 
+    }   
+
+    const session = await signInAccount({
+      email:values.email,
+      password:values.password
+    })
+
+    if(!session){
+      return toast({
+        variant: "destructive",
+        title: "sign in failed.Please try again.  ",
+     
+      }); 
+    };
+
+    const isLoggedIn = await checkAuthUser();
+
+    if(isLoggedIn) {
+      form.reset();
+      navigate('/')
+    }else{
+      return toast({
+        variant: "destructive",
+        title: "sign up failed.Please try again.  ",
+     
+      }); 
     }
 
 
-  }
+
+  }    
+
 
   return (
     <Form {...form}>
@@ -119,7 +156,7 @@ const SignupForm = () => {
             )}
           />
           <Button className="shad-button_primary" type="submit">
-            {isLoading ? (
+            {creatingUser ? (
               <div className="flex-center ">
                 <Loader />
                 <span className="mx-2"> Loading...</span>
