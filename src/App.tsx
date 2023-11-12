@@ -1,12 +1,34 @@
 import './App.css'
-
+import {
+   Routes, Route,
+} from 'react-router-dom';
+import SigninForm from './_auth/forms/SigninForm';
+import { Home, RootLayout } from './_root/Pages';
+import SignupForm from './_auth/forms/SignupForm';
+import AuthLayout from './_auth/AuthLayout';
 function App() {
 
   return (
     <>
-      <div>
-      <h1 className='bg-red-400'>hello </h1>  
-      </div>
+      <main className='flex h-screen '>
+      <Routes>
+        {/* pulic routes */}
+        <Route element={<AuthLayout/>} >
+        <Route path='/sign-in' element={<SigninForm/>} />
+        <Route path='/sign-up' element={<SignupForm/>} />
+
+        </Route>
+
+
+        {/* private routes */}
+
+        <Route  element={<RootLayout/>} >
+        <Route index element={<Home/>} />
+
+        </Route>
+
+      </Routes>
+      </main>
     
     </>
   )
