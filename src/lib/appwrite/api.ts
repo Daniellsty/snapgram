@@ -65,3 +65,16 @@ export async function saveUserToDB(user :
         }
 
 }
+
+export async function SignInAccount( user:{email:string;password:string} ){
+
+    try {
+        
+        const sesstion = await account.createEmailSession(user.email,user.password);
+        return sesstion;
+
+    } catch (error) {
+        
+    }
+
+}
