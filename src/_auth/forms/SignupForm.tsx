@@ -37,9 +37,9 @@ const SignupForm = () => {
   });  
   
   
-    const {mutateAsync :createUserAccount ,isLoading : creatingUser} =userCreateUserAccountMutation();
+    const {mutateAsync :createUserAccount ,isPending : IsCreatingAccount} =userCreateUserAccountMutation();
     
-    const {mutateAsync :signInAccount ,isLoading : signiningUser} =userSignInAccount();
+    const {mutateAsync :signInAccount ,isPending : isSigningIn} =userSignInAccount();
 
 
   async function onSubmit(values: z.infer<typeof SignupValidation>) {
@@ -156,7 +156,7 @@ const SignupForm = () => {
             )}
           />
           <Button className="shad-button_primary" type="submit">
-            {creatingUser ? (
+            {IsCreatingAccount ? (
               <div className="flex-center ">
                 <Loader />
                 <span className="mx-2"> Loading...</span>
