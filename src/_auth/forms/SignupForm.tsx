@@ -91,7 +91,7 @@ const SignupForm = () => {
         <img src={logo} alt="logo" />
         <h2 className="h3-bold md:h2-bold sm:pt-4">Create a new account</h2>
         <p className="text-light small-medium md:base-regular mt-2">
-          To use Snapgram please , enter your details
+          To use Snapgram Please , Enter Your Details
         </p>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -101,7 +101,7 @@ const SignupForm = () => {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>name</FormLabel>
+                <FormLabel>Name</FormLabel>
                 <FormControl>
                   <Input type="text" className="shad-input" {...field} />
                 </FormControl>
@@ -131,7 +131,7 @@ const SignupForm = () => {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>email</FormLabel>
+                <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input type="text" className="shad-input" {...field} />
                 </FormControl>
@@ -146,7 +146,7 @@ const SignupForm = () => {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>password</FormLabel>
+                <FormLabel>Password</FormLabel>
                 <FormControl>
                   <Input type="text" className="shad-input" {...field} />
                 </FormControl>
