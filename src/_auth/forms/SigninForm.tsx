@@ -12,13 +12,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { SigninValidation, SignupValidation } from "@/lib/validation";
+import { SigninValidation } from "@/lib/validation";
 import logo from "../../assets/images/logo (1).svg";
 import Loader from "@/components/ui/shared/Loader";
 import { NavLink, useNavigate } from "react-router-dom";
-import { createUserAccount } from "../../lib/appwrite/api";
+
 import { useToast } from "@/components/ui/use-toast";
-import { ToastAction } from "@/components/ui/toast"
+
 import {  userSignInAccount } from "@/lib/react-query/queriesAndMutation";
 import { useUserContext } from "@/context/AuthContext";
 const SigninForm = () => {
@@ -39,15 +39,12 @@ const SigninForm = () => {
 
 
   async function onSubmit(values: z.infer<typeof SigninValidation>) {
-    const newUser = await signInAccount({
-      email:values.email,
-      password:values.password
-    });
+    const newUser = await signInAccount(values);
     
     if(!newUser){
       return toast({
          variant: "destructive",
-         title: "sign up failed.Please try again.  ",
+         title: "sign in failed.Please try again.  ",
         //  action: <ToastAction altText="Try again">Try again</ToastAction>, 
        }); 
 
@@ -58,13 +55,12 @@ const SigninForm = () => {
 
     if(isLoggedIn) {
       form.reset();
-      console.log('logged');
       
       navigate('/')
     }else{
       return toast({
         variant: "destructive",
-        title: "sign up failed.Please try again.  ",
+        title: "sign in failed.Please try again.  ",
      
       }); 
     }
