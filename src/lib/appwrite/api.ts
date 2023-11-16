@@ -127,16 +127,16 @@ export async function createPost(post: INewPost) {
       const fileUrl = getFilePreviw(uploadedFile.$id)
       if(!fileUrl) {
 
-          deleteFile(uploadedFile.$id)
+          await deleteFile(uploadedFile.$id)
           throw Error;
       } 
 
       // covenrt tags into array 
 
-      const tags = post.tags?.replace(/ /g,'').split(',') || [];
+      const tags = post.tags?.replace(/ /g, "").split(",") || [];
 
       const newPost = await databases.createDocument(
-        appwriteConfig.databaseId,
+  
         appwriteConfig.databaseId,
         appwriteConfig.postsCollectionId,
         ID.unique(),
@@ -180,7 +180,7 @@ export async function createPost(post: INewPost) {
 
   }
 
-  export async function getFilePreviw(fileId:string) {
+  export  function getFilePreviw(fileId:string) {
 
     try {
         const fileUrl =storage.getFilePreview(
@@ -191,7 +191,9 @@ export async function createPost(post: INewPost) {
             "top",
             100,
 
-        )
+        );
+
+        if(!fileUrl) throw Error;
 
         return fileUrl;
     } catch (error) {
@@ -211,3 +213,19 @@ export async function createPost(post: INewPost) {
     }
   }
 
+export async function getRecentPosts(){
+
+    try {
+        const posts = await databases.listDocuments(
+          appwriteConfig.databaseId,
+          appwriteConfig.postsCollectionId,
+          [Query.orderDesc("$createdAt"), Query.limit(20)]
+        );
+    
+        if (!posts) throw Error;
+    
+        return posts;
+      } catch (error) {
+        console.log(error);
+      }
+}
