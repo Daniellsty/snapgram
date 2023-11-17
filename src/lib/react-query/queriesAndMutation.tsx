@@ -1,4 +1,4 @@
-import { INewPost, INewUser } from '@/types'
+import { INewPost, INewUser, IUpdatePost } from '@/types'
 import {
     useQuery,
     useMutation,
@@ -7,7 +7,7 @@ import {
     QueryClientProvider,
     useInfiniteQuery,
   } from '@tanstack/react-query'
-import { signInAccount, createUserAccount, signOutAccount, createPost, getRecentPosts, likePost, savePost, deleteSavedPost } from '../appwrite/api'
+import { signInAccount, createUserAccount, signOutAccount, createPost, getRecentPosts, likePost, savePost, deleteSavedPost, getCurrentUser, getPostById, updatePost, deletePost } from '../appwrite/api'
 import { QUERY_KEYS } from './queryKeys'
 
   export const userCreateUserAccountMutation = ()=> {
@@ -81,23 +81,24 @@ import { QUERY_KEYS } from './queryKeys'
   export const useSavePost=()=>{
     const queryClient = useQueryClient();
     return useMutation({
-      mutationFn:({postId,userId} : {postId:string ;userId: string} ) => savePost(postId,userId),
+      mutationFn:({postId,userId} : {postId:string ;userId: string} ) => 
+      savePost(postId,userId),
       onSuccess:()=>{
     
         queryClient.invalidateQueries({
           queryKey:[QUERY_KEYS.GET_RECENT_POSTS]
-        })
+        });
 
         queryClient.invalidateQueries({
           queryKey:[QUERY_KEYS.GET_POSTS]
-        })
+        });
 
         queryClient.invalidateQueries({
           queryKey:[QUERY_KEYS.GET_CURRENT_USER]
-        })
-      }
-    })
-  }
+        });
+      },
+    });
+  };
 
   
   export const useDeleteSavedPost=()=>{
@@ -107,15 +108,65 @@ import { QUERY_KEYS } from './queryKeys'
       onSuccess:()=>{
     
         queryClient.invalidateQueries({
+          queryKey:[QUERY_KEYS.GET_RECENT_POSTS],
+        });
+
+        queryClient.invalidateQueries({
+          queryKey:[QUERY_KEYS.GET_POSTS],
+        });
+
+        queryClient.invalidateQueries({
+          queryKey:[QUERY_KEYS.GET_CURRENT_USER],
+        });
+      }
+    })
+  }
+
+  export  const useGetCurrentUser=()=>{
+
+    return useQuery({
+      queryKey:[QUERY_KEYS.GET_CURRENT_USER],
+      queryFn:getCurrentUser
+    })
+
+
+  }
+
+  export const useGetByPostById=(postId:string)=>{
+    return useQuery({
+      queryKey:[QUERY_KEYS.GET_POST_BY_ID,postId],
+      queryFn:()=> getPostById(postId),
+      enabled:!!postId
+    })
+  }
+
+  export const useUpdatePost=()=>{
+
+    const queryClient = useQueryClient();
+
+    return useMutation({
+    
+      mutationFn:(post:IUpdatePost)=> updatePost(post),
+      onSuccess:(data)=> {
+        queryClient.invalidateQueries({
+          queryKey:[QUERY_KEYS.GET_POST_BY_ID, data?.$id]
+        })
+      }
+    })
+  }
+
+  
+  export const useDeletePost=()=>{
+
+    const queryClient = useQueryClient();
+
+    return useMutation({
+    
+      mutationFn:({postId,imageId} :{postId:string,imageId:string})=>
+       deletePost(postId,imageId),
+      onSuccess:()=> {
+        queryClient.invalidateQueries({
           queryKey:[QUERY_KEYS.GET_RECENT_POSTS]
-        })
-
-        queryClient.invalidateQueries({
-          queryKey:[QUERY_KEYS.GET_POSTS]
-        })
-
-        queryClient.invalidateQueries({
-          queryKey:[QUERY_KEYS.GET_CURRENT_USER]
         })
       }
     })
