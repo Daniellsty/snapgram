@@ -16,7 +16,7 @@ import { Textarea } from "../ui/textarea";
 import FileUploader from "../ui/shared/FileUploader";
 import { PostValidation } from "@/lib/validation";
 import { Models } from "appwrite";
-import { useCreatePost } from "@/lib/react-query/queriesAndMutation";
+import { useCreatePost, useUpdatePost } from "@/lib/react-query/queriesAndMutation";
 import { useUserContext } from "@/context/AuthContext";
 import { toast } from "../ui/use-toast";
 import { useNavigate } from "react-router-dom";
@@ -24,11 +24,17 @@ import Loader from "../ui/shared/Loader";
 
 type PostFormProps = {
   post?: Models.Document;
+  action:'Create' | "Update"
 };
 
-const PostForm = ({ post }: PostFormProps) => {
+const PostForm = ({ post ,action }: PostFormProps) => {
   const { mutateAsync: createPost, isPending: isLoadingCreate } =
     useCreatePost();
+
+    const { mutateAsync: updatePost, isPending: isLoadingUpdate } =
+    useUpdatePost();
+
+
   const { user } = useUserContext();
   const navigate = useNavigate();
 
@@ -44,6 +50,25 @@ const PostForm = ({ post }: PostFormProps) => {
 
   async function onSubmit(values: z.infer<typeof PostValidation>) {
   
+    if(post && action === 'Update' ){
+      const updatedPost = await updatePost({
+        ...values,
+        postId:post.$id,
+        imageId:post?.imageId,
+        imageUrl:post?.imageUrl
+      })
+      if(!updatePost){
+        return toast({
+          variant: "destructive",
+          title: "failed To Update Post .Please try again.  ",
+        });
+      }
+
+      return navigate(`/posts/${post.$id}`)
+    }
+
+
+
     const newPost = await createPost({
       ...values,
       userId: user.id,
@@ -141,16 +166,13 @@ const PostForm = ({ post }: PostFormProps) => {
             Cancel{" "}
           </Button>
           <Button
+            disabled={isLoadingCreate || isLoadingUpdate}
             type="submit"
-            className="shad-button_primary whitespace-nowrap h-12">
-            {isLoadingCreate ? (
-              <div className="flex items-center gap-2 flex-center">
-                <Loader />
-                <span>Loading...</span>
-              </div>
-            ) : (
-              "Create"
-            )}
+            className="shad-button_primary whitespace-nowrap h-12"
+            >
+           
+            {isLoadingCreate || isLoadingCreate && 'Loading...'}
+            {action} Post
           </Button>
         </div>
       </form>
