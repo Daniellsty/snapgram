@@ -44,7 +44,7 @@ const PostCard = ({ post }: postCardProps) => {
         </NavLink>
       </div>
 
-      <NavLink to={`/post/$${post.$id}`} >
+      <NavLink to={`/posts/${post.$id}`} >
         <div className="small-medium lg:base-medium py-5">
         <p>{post.caption}</p>
         <ul className="flex gap-1 mt-2">
