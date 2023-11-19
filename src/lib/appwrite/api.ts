@@ -1,4 +1,4 @@
-import { INewPost, INewUser, IUpdatePost } from "@/types";
+import { INewPost, INewUser, IUpdatePost, IUpdateUser } from "@/types";
 import { account, appwriteConfig, avatars, databases, storage } from "./config";
 import { ID, Query } from "appwrite";
 
@@ -253,21 +253,22 @@ export async function likePost(postId:string,likedArray:string[]) {
     }
 }
 
-export async function savePost(postId:string,userId:string) {
+export async function savePost(userId: string, postId: string) {
     
     try {
-        const savedPost = await databases.createDocument(
+        const updatedPost = await databases.createDocument(
             appwriteConfig.databaseId,
             appwriteConfig.savesCollectionId,
             ID.unique(),
             {
-                post:postId,
-                user:userId,
+              user: userId,
+              post: postId,
             }
             );
 
-            if(!savedPost) throw Error;
-            return savedPost;
+            if(!updatedPost) throw Error;
+            
+            return updatedPost;
 
     } catch (error) {
         console.log(error);
@@ -474,3 +475,60 @@ export async function getUsers(limit?: number) {
     }
   }
   
+
+  export async function updateUser(user: IUpdateUser) {
+    const hasFileToUpdate = user.file.length > 0;
+    try {
+      let image = {
+        imageUrl: user.imageUrl,
+        imageId: user.imageId,
+      };
+  
+      if (hasFileToUpdate) {
+        // Upload new file to appwrite storage
+        const uploadedFile = await uploadFile(user.file[0]);
+        if (!uploadedFile) throw Error;
+  
+        // Get new file url
+        const fileUrl = getFilePreviw(uploadedFile.$id);
+        if (!fileUrl) {
+          await deleteFile(uploadedFile.$id);
+          throw Error;
+        }
+  
+        image = { ...image, imageUrl: fileUrl, imageId: uploadedFile.$id };
+      }
+  
+      //  Update user
+      const updatedUser = await databases.updateDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.userCollectionId,
+        user.userId,
+        {
+          name: user.name,
+          bio: user.bio,
+          imageUrl: image.imageUrl,
+          imageId: image.imageId,
+        }
+      );
+  
+      // Failed to update
+      if (!updatedUser) {
+        // Delete new file that has been recently uploaded
+        if (hasFileToUpdate) {
+          await deleteFile(image.imageId);
+        }
+        // If no new file uploaded, just throw error
+        throw Error;
+      }
+  
+      // Safely delete old file after successful update
+      if (user.imageId && hasFileToUpdate) {
+        await deleteFile(user.imageId);
+      }
+  
+      return updatedUser;
+    } catch (error) {
+      console.log(error);
+    }
+  }

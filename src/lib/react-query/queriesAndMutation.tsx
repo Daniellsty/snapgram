@@ -1,4 +1,4 @@
-import { INewPost, INewUser, IUpdatePost } from "@/types";
+import { INewPost, INewUser, IUpdatePost, IUpdateUser } from "@/types";
 import {
   useQuery,
   useMutation,
@@ -24,8 +24,11 @@ import {
   searchPosts,
   getUsers,
   getUserById,
+  updateUser,
 } from "../appwrite/api";
 import { QUERY_KEYS } from "./queryKeys";
+
+// user logic
 
 export const userCreateUserAccountMutation = () => {
   return useMutation({
@@ -45,6 +48,9 @@ export const userSignOutAccount = () => {
     mutationFn: signOutAccount,
   });
 };
+
+// posts logic
+
 
 export const useCreatePost = () => {
   const queryClient = useQueryClient();
@@ -98,8 +104,8 @@ export const useLikePost = () => {
 export const useSavePost = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ postId, userId }: { postId: string; userId: string }) =>
-      savePost(postId, userId),
+    mutationFn: ({ userId, postId }: { userId: string; postId: string }) =>
+    savePost(userId, postId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
@@ -203,6 +209,8 @@ export const useSearchPosts = (searchTerm: string) => {
   });
 };
 
+// updating user
+
 
 export const useGetUsers = (limit?: number) => {
   return useQuery({
@@ -216,5 +224,20 @@ export const useGetUserById = (userId: string) => {
     queryKey: [QUERY_KEYS.GET_USER_BY_ID, userId],
     queryFn: () => getUserById(userId),
     enabled: !!userId,
+  });
+};
+
+export const useUpdateUser = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (user: IUpdateUser) => updateUser(user),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_CURRENT_USER],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_USER_BY_ID, data?.$id],
+      });
+    },
   });
 };
