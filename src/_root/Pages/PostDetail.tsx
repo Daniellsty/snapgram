@@ -1,27 +1,44 @@
 import { useGetByPostById } from "@/lib/react-query/queriesAndMutation";
 import { multiFormatDateString } from "@/lib/utils";
-import { Loader } from "lucide-react";
+
 import React from "react";
-import { NavLink, useParams } from "react-router-dom";
+import { NavLink, useNavigate, useParams } from "react-router-dom";
 import profile from "../../assets/icons/profile-placeholder.svg";
 import edit from "../../assets/icons/edit.svg";
 import { useUserContext } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import deleteImage from "../../assets/icons/delete.svg";
 import PostStats from "@/components/ui/shared/PostStats";
+import { deletePost } from "@/lib/appwrite/api";
+import Loader from "@/components/ui/shared/Loader";
 const PostDetail = () => {
   const { id } = useParams();
   const { data: post, isPending } = useGetByPostById(id || "");
   const { user } = useUserContext();
 
-  const handleDeletePost = () => {};
+  
+  const navigate = useNavigate()
+
+  const handleDeletePost = () => {
+    deletePost( {
+      postId: id, 
+      imageId: post.imageId,
+    } );
+
+    
+    window.location.reload()
+    navigate(-1);
+    // window.location.reload()
+  };
 
   return (
     <div className="post_details-container">
       {isPending ? (
         <Loader />
       ) : (
+        
         <div className="post_details-card">
+          
           <img className="post_details-img" src={post?.imageUrl} alt="post" />
 
           <div className="post_details-info">

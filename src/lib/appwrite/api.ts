@@ -371,26 +371,35 @@ export async function updatePost(post: IUpdatePost) {
     }
   }
 
-export async function deletePost(postId:string,imageId:string){
+  type deletePostType={
+    postId:string,
+    imageId : string
+  }
 
-    if(!postId || !imageId ) throw Error;
+  export async function deletePost({postId, imageId} :deletePostType ) {
 
+    if (!postId || !imageId) {
+      console.log('error');
+      
+      return
+    };
+  
     try {
-        
-        await databases.deleteDocument(
-            appwriteConfig.databaseId,
-            appwriteConfig.postsCollectionId,
-            postId
-        )
-
-        return {status:'ok'}
-
+      const statusCode = await databases.deleteDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.postsCollectionId,
+        postId
+      );
+  
+      if (!statusCode) throw Error;
+  
+      await deleteFile(imageId);
+  
+      return { status: "Ok" };
     } catch (error) {
-        console.log(error);
-        
+      console.log(error);
     }
-
-}
+  }
 
 export async function getInfinitePosts({pageParam} :{pageParam:number} ){
 
