@@ -1,10 +1,7 @@
 import { useUserContext } from '@/context/AuthContext'
 import { Models } from 'appwrite'
-import React from 'react'
 import { NavLink } from 'react-router-dom'
 import PostStats from './PostStats'
-import { Loader } from 'lucide-react'
-import { useGetPosts } from '@/lib/react-query/queriesAndMutation'
 
 type GridPostListProps={
     posts:Models.Document[];

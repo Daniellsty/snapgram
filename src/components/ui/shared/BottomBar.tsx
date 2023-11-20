@@ -1,5 +1,4 @@
 import { bottombarLinks } from "@/constants";
-import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 
 const BottomBar = () => {

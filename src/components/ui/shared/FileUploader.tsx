@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react'
+import  {useCallback, useState} from 'react'
 import { FileWithPath, useDropzone} from 'react-dropzone'
 import fileUploader from '../../../assets/icons/file-upload.svg'
 import { Button } from '../button'
@@ -20,7 +20,7 @@ const FileUploader = ({fieldChange,mediaUrl}:FileUploaderProps) => {
       setFilteUrl(URL.createObjectURL(acceptedFiles[0]))
     }, [file])
 
-    const {getRootProps, getInputProps, isDragActive} = useDropzone({
+    const {getRootProps, getInputProps} = useDropzone({
       
       onDrop,
       accept:{

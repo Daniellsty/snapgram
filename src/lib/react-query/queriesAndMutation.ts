@@ -2,10 +2,9 @@ import { INewPost, INewUser, IUpdatePost, IUpdateUser } from "@/types";
 import {
   useQuery,
   useMutation,
-  useQueryClient,
-  QueryClient,
-  QueryClientProvider,
+  
   useInfiniteQuery,
+  useQueryClient,
 } from "@tanstack/react-query";
 import {
   signInAccount,
@@ -104,7 +103,7 @@ export const useLikePost = () => {
 export const useSavePost = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ userId, postId }: { userId: string; postId: string }) =>
+    mutationFn: ({ userId, postId }: { userId: string; postId: any }) =>
     savePost(userId, postId),
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -157,9 +156,10 @@ export const useGetByPostById = (postId: string) => {
   });
 };
 
+
+
 export const useUpdatePost = () => {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: (post: IUpdatePost) => updatePost(post),
     onSuccess: (data) => {
@@ -170,12 +170,13 @@ export const useUpdatePost = () => {
   });
 };
 
+
 export const useDeletePost = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({ postId, imageId }: { postId: string; imageId: string }) =>
-      deletePost(postId, imageId),
+      deletePost({postId, imageId}),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
@@ -187,7 +188,7 @@ export const useDeletePost = () => {
 export const useGetPosts = () => {
   return useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_INFINITE_POSTS],
-    queryFn: getInfinitePosts,
+    queryFn: getInfinitePosts as any ,
     getNextPageParam: (lastPage: any) => {
       // If there's no data, there are no more pages.
       if (lastPage && lastPage.documents.length === 0) {
@@ -195,8 +196,8 @@ export const useGetPosts = () => {
       }
 
       // Use the $id of the last document as the cursor.
-      const lastId = lastPage?.documents[lastPage?.documents.length - 1].$id;
-      return lastId
+      const lastId = lastPage.documents[lastPage.documents.length - 1].$id;
+      return lastId;
     },
   });
 };

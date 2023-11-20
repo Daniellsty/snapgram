@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import search from "../../assets/icons/search.svg";
 import { Input } from "@/components/ui/input";
 import filter from "../../assets/icons/filter.svg";
-import SearchResults from "@/components/ui/shared/SearchResults";
 import GridPostList from "@/components/ui/shared/GridPostList";
 import {
   useGetPosts,
@@ -12,14 +11,33 @@ import useDebounce from "@/hooks/useDebounce";
 import Loader from "@/components/ui/shared/Loader";
 import { useInView } from 'react-intersection-observer';
 
+
+export type SearchResultProps = {
+  isSearchFetching: boolean;
+  searchedPosts: any;
+};
+
+const SearchResults = ({ isSearchFetching, searchedPosts }: SearchResultProps) => {
+  if (isSearchFetching) {
+    return <Loader />;
+  } else if (searchedPosts && searchedPosts.documents.length > 0) {
+    return <GridPostList posts={searchedPosts.documents} />;
+  } else {
+    return (
+      <p className="text-light-4 mt-10 text-center w-full">No results found</p>
+    );
+  }
+};
+
+
 const Explore = () => {
 
-  const {ref,inView} = useInView();
-  const { data: posts, fetchNextPage, hasNextPage } = useGetPosts();
+  const {inView} = useInView();
+  const { data: posts, fetchNextPage } = useGetPosts();
 
   const [searchValue, setSearchValue] = useState("");
   const debouncedValue = useDebounce(searchValue, 500);
-  const { data: searchedPosts, isFetching: isSearchFetching } = useSearchPosts(searchValue);
+  const { data: searchedPosts, isFetching: isSearchFetching } = useSearchPosts(debouncedValue);
 
 
   useEffect(()=>{

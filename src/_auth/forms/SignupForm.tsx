@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -16,15 +15,13 @@ import { SignupValidation } from "@/lib/validation";
 import logo from "../../assets/images/logo (1).svg";
 import Loader from "@/components/ui/shared/Loader";
 import { NavLink, useNavigate } from "react-router-dom";
-import { createUserAccount } from "../../lib/appwrite/api";
 import { useToast } from "@/components/ui/use-toast";
-import { ToastAction } from "@/components/ui/toast"
 import { userCreateUserAccountMutation, userSignInAccount } from "@/lib/react-query/queriesAndMutation";
 import { useUserContext } from "@/context/AuthContext";
 const SignupForm = () => {
   const { toast } = useToast();
   const navigate = useNavigate()
-  const {checkAuthUser ,isLoading :isUserLoading  } = useUserContext();
+  const {checkAuthUser   } = useUserContext();
   
   const form = useForm<z.infer<typeof SignupValidation>>({
     resolver: zodResolver(SignupValidation),
@@ -39,7 +36,7 @@ const SignupForm = () => {
   
     const {mutateAsync :createUserAccount ,isPending : IsCreatingAccount} =userCreateUserAccountMutation();
     
-    const {mutateAsync :signInAccount ,isPending : isSigningIn} =userSignInAccount();
+    const {mutateAsync :signInAccount } =userSignInAccount();
 
 
   async function onSubmit(values: z.infer<typeof SignupValidation>) {

@@ -41,6 +41,7 @@ export type INavLink = {
     file: File[];
     location?: string;
     tags?: string;
+   
   };
   
   export type IUser = {

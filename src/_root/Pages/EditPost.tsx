@@ -1,4 +1,3 @@
-import React from "react";
 import addpost from '../../assets/icons/add-post.svg'
 import PostForm from "@/components/forms/PostForm";
 import { useParams } from "react-router-dom";

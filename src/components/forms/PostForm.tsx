@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -20,7 +19,6 @@ import { useCreatePost, useUpdatePost } from "@/lib/react-query/queriesAndMutati
 import { useUserContext } from "@/context/AuthContext";
 import { toast } from "../ui/use-toast";
 import { useNavigate } from "react-router-dom";
-import Loader from "../ui/shared/Loader";
 
 type PostFormProps = {
   post?: Models.Document;
@@ -57,14 +55,16 @@ const PostForm = ({ post ,action }: PostFormProps) => {
         imageId:post?.imageId,
         imageUrl:post?.imageUrl
       })
-      if(!updatePost){
+      if(!updatedPost){
         return toast({
           variant: "destructive",
           title: "failed To Update Post .Please try again.  ",
         });
       }
 
+      
       return navigate(`/posts/${post.$id}`)
+      
     }
 
 

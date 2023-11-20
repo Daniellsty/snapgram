@@ -1,11 +1,10 @@
 import { Models } from 'appwrite';
-import React from 'react'
 import Loader from './Loader';
 import GridPostList from './GridPostList';
 
 type SearhcResultProps={
   isSearchFetching:boolean;
-  searchedPosts:Models.Document[]
+  searchedPosts:any;
 }
 
 const SearchResults = ({isSearchFetching,searchedPosts}:SearhcResultProps) => {
@@ -14,7 +13,10 @@ const SearchResults = ({isSearchFetching,searchedPosts}:SearhcResultProps) => {
     return <Loader/>
   }
 
+  
+  
   if( searchedPosts && searchedPosts?.documents.length > 0){
+    console.log(searchedPosts);
     return <GridPostList posts={searchedPosts.documents} />
   }
 
