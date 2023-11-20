@@ -1,7 +1,7 @@
+import Loader from "@/components/ui/shared/Loader";
 import UserCard from "@/components/ui/shared/UserCard";
 import { useToast } from "@/components/ui/use-toast";
 import { useGetUsers } from "@/lib/react-query/queriesAndMutation";
-import { Loader } from "lucide-react";
 // import { Loader, UserCard } from "@/components/shared";
 // import { useGetUsers } from "@/lib/react-query/queries";
 
