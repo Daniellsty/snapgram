@@ -2,7 +2,7 @@ import { Models } from "appwrite";
 import { useGetCurrentUser } from "@/lib/react-query/queriesAndMutation";
 import Loader from "@/components/ui/shared/Loader";
 import GridPostList from "@/components/ui/shared/GridPostList";
-import edit from '../../assets/icons/edit.svg'
+import edit from "../../assets/icons/edit.svg";
 const Saved = () => {
   const { data: currentUser } = useGetCurrentUser();
 

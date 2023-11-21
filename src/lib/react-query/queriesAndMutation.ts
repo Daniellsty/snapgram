@@ -2,7 +2,6 @@ import { INewPost, INewUser, IUpdatePost, IUpdateUser } from "@/types";
 import {
   useQuery,
   useMutation,
-  
   useInfiniteQuery,
   useQueryClient,
 } from "@tanstack/react-query";
@@ -49,6 +48,25 @@ export const userSignOutAccount = () => {
 };
 
 // posts logic
+
+export const useGetPosts = () => {
+  return useInfiniteQuery({
+    queryKey: [QUERY_KEYS.GET_INFINITE_POSTS],
+    queryFn:({pageParam})=> getInfinitePosts(pageParam)  ,
+    initialPageParam:9,
+
+    getNextPageParam: (lastPage: any) =>  {
+      
+      if (lastPage && lastPage.documents.length === 0) {
+        return null;
+      }
+      const lastId = lastPage.documents[lastPage.documents.length - 1].$id;
+      return lastId;
+    },
+  });
+};
+
+
 
 
 export const useCreatePost = () => {
@@ -161,8 +179,8 @@ export const useGetByPostById = (postId: string) => {
 export const useUpdatePost = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (post: IUpdatePost) => updatePost(post),
-    onSuccess: (data) => {
+    mutationFn: (post: IUpdatePost) => updatePost(post) ,
+    onSuccess: ( data ) => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_POST_BY_ID, data?.$id],
       });
@@ -185,22 +203,7 @@ export const useDeletePost = () => {
   });
 };
 
-export const useGetPosts = () => {
-  return useInfiniteQuery({
-    queryKey: [QUERY_KEYS.GET_INFINITE_POSTS],
-    queryFn: getInfinitePosts as any ,
-    getNextPageParam: (lastPage: any) => {
-      // If there's no data, there are no more pages.
-      if (lastPage && lastPage.documents.length === 0) {
-        return null;
-      }
 
-      // Use the $id of the last document as the cursor.
-      const lastId = lastPage.documents[lastPage.documents.length - 1].$id;
-      return lastId;
-    },
-  });
-};
 
 export const useSearchPosts = (searchTerm: string) => {
   return useQuery({

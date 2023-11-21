@@ -16,13 +16,16 @@ import logo from "../../assets/images/logo (1).svg";
 import Loader from "@/components/ui/shared/Loader";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
-import { userCreateUserAccountMutation, userSignInAccount } from "@/lib/react-query/queriesAndMutation";
+import {
+  userCreateUserAccountMutation,
+  userSignInAccount,
+} from "@/lib/react-query/queriesAndMutation";
 import { useUserContext } from "@/context/AuthContext";
 const SignupForm = () => {
   const { toast } = useToast();
-  const navigate = useNavigate()
-  const {checkAuthUser   } = useUserContext();
-  
+  const navigate = useNavigate();
+  const { checkAuthUser } = useUserContext();
+
   const form = useForm<z.infer<typeof SignupValidation>>({
     resolver: zodResolver(SignupValidation),
     defaultValues: {
@@ -30,57 +33,49 @@ const SignupForm = () => {
       username: "",
       email: "",
       password: "",
-    },  
-  });  
-  
-  
-    const {mutateAsync :createUserAccount ,isPending : IsCreatingAccount} =userCreateUserAccountMutation();
-    
-    const {mutateAsync :signInAccount } =userSignInAccount();
+    },
+  });
 
+  const { mutateAsync: createUserAccount, isPending: IsCreatingAccount } =
+    userCreateUserAccountMutation();
+
+  const { mutateAsync: signInAccount } = userSignInAccount();
 
   async function onSubmit(values: z.infer<typeof SignupValidation>) {
     const newUser = await createUserAccount(values);
     console.log(newUser);
-    if(!newUser){
-      return toast({
-         variant: "destructive",
-         title: "sign up failed.Please try again.  ",
-        //  action: <ToastAction altText="Try again">Try again</ToastAction>, 
-       }); 
-
-    }   
-
-    const session = await signInAccount({
-      email:values.email,
-      password:values.password
-    })
-
-    if(!session){
-      return toast({
-        variant: "destructive",
-        title: "sign in failed.Please try again.  ",
-     
-      }); 
-    };
-
-    const isLoggedIn = await checkAuthUser();
-
-    if(isLoggedIn) {
-      form.reset();
-      navigate('/')
-    }else{
+    if (!newUser) {
       return toast({
         variant: "destructive",
         title: "sign up failed.Please try again.  ",
-     
-      }); 
+        //  action: <ToastAction altText="Try again">Try again</ToastAction>,
+      });
     }
 
+    const session = await signInAccount({
+      email: values.email,
+      password: values.password,
+    });
 
+    if (!session) {
+      return toast({
+        variant: "destructive",
+        title: "sign in failed.Please try again.  ",
+      });
+    }
 
-  }    
+    const isLoggedIn = await checkAuthUser();
 
+    if (isLoggedIn) {
+      form.reset();
+      navigate("/");
+    } else {
+      return toast({
+        variant: "destructive",
+        title: "sign up failed.Please try again.  ",
+      });
+    }
+  }
 
   return (
     <Form {...form}>

@@ -16,13 +16,11 @@ import { useUserContext } from "@/context/AuthContext";
 import { useGetUserById } from "@/lib/react-query/queriesAndMutation";
 import Loader from "@/components/ui/shared/Loader";
 import GridPostList from "@/components/ui/shared/GridPostList";
-import profile from '../../assets/icons/profile-placeholder.svg';
-import edit from '../../assets/icons/edit.svg'
-import like from '../../assets/icons/like.svg'
-import posts from '../../assets/icons/posts.svg'
+import profile from "../../assets/icons/profile-placeholder.svg";
+import edit from "../../assets/icons/edit.svg";
+import like from "../../assets/icons/like.svg";
+import posts from "../../assets/icons/posts.svg";
 import { LikedPosts } from ".";
-
-
 
 interface StabBlockProps {
   value: string | number;
@@ -43,7 +41,6 @@ const Profile = () => {
 
   const { data: currentUser } = useGetUserById(id || "");
 
-
   if (!currentUser)
     return (
       <div className="flex-center w-full h-full">
@@ -56,9 +53,7 @@ const Profile = () => {
       <div className="profile-inner_container">
         <div className="flex xl:flex-row flex-col max-xl:items-center flex-1 gap-7">
           <img
-            src={
-              currentUser.imageUrl || profile
-            }
+            src={currentUser.imageUrl || profile}
             alt="profile"
             className="w-28 h-28 lg:h-36 lg:w-36 rounded-full"
           />
@@ -90,20 +85,13 @@ const Profile = () => {
                 className={`h-12 bg-dark-4 px-5 text-light-1 flex-center gap-2 rounded-lg ${
                   user.id !== currentUser.$id && "hidden"
                 }`}>
-                <img
-                  src={edit}
-                  alt="edit"
-                  width={20}
-                  height={20}
-                />
+                <img src={edit} alt="edit" width={20} height={20} />
                 <p className="flex whitespace-nowrap small-medium">
                   Edit Profile
                 </p>
               </Link>
             </div>
-            <div className={`${user.id === id && "hidden"}`}>
-           
-            </div>
+            <div className={`${user.id === id && "hidden"}`}></div>
           </div>
         </div>
       </div>
@@ -115,12 +103,7 @@ const Profile = () => {
             className={`profile-tab rounded-l-lg ${
               pathname === `/profile/${id}` && "!bg-dark-3"
             }`}>
-            <img
-              src={posts}
-              alt="posts"
-              width={20}
-              height={20}
-            />
+            <img src={posts} alt="posts" width={20} height={20} />
             Posts
           </Link>
           <Link
@@ -128,12 +111,7 @@ const Profile = () => {
             className={`profile-tab rounded-r-lg ${
               pathname === `/profile/${id}/liked-posts` && "!bg-dark-3"
             }`}>
-            <img
-              src={like}
-              alt="like"
-              width={20}
-              height={20}
-            />
+            <img src={like} alt="like" width={20} height={20} />
             Liked Posts
           </Link>
         </div>
@@ -145,7 +123,7 @@ const Profile = () => {
           element={<GridPostList posts={currentUser.posts} showUser={false} />}
         />
         {currentUser.$id === user.id && (
-          <Route  path={ `/liked-posts`} element={<LikedPosts />} />
+          <Route path={`/liked-posts`} element={<LikedPosts />} />
         )}
       </Routes>
       <Outlet />

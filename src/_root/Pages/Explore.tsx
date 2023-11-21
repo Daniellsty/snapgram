@@ -1,4 +1,4 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import search from "../../assets/icons/search.svg";
 import { Input } from "@/components/ui/input";
 import filter from "../../assets/icons/filter.svg";
@@ -9,15 +9,17 @@ import {
 } from "@/lib/react-query/queriesAndMutation";
 import useDebounce from "@/hooks/useDebounce";
 import Loader from "@/components/ui/shared/Loader";
-import { useInView } from 'react-intersection-observer';
-
+import { useInView } from "react-intersection-observer";
 
 export type SearchResultProps = {
   isSearchFetching: boolean;
   searchedPosts: any;
 };
 
-const SearchResults = ({ isSearchFetching, searchedPosts }: SearchResultProps) => {
+const SearchResults = ({
+  isSearchFetching,
+  searchedPosts,
+}: SearchResultProps) => {
   if (isSearchFetching) {
     return <Loader />;
   } else if (searchedPosts && searchedPosts.documents.length > 0) {
@@ -29,24 +31,19 @@ const SearchResults = ({ isSearchFetching, searchedPosts }: SearchResultProps) =
   }
 };
 
-
 const Explore = () => {
-
-  const {inView} = useInView();
-  const { data: posts, fetchNextPage } = useGetPosts();
+ 
+  const { data: posts, fetchNextPage , hasNextPage } = useGetPosts();
+  const { ref, inView } = useInView();
 
   const [searchValue, setSearchValue] = useState("");
   const debouncedValue = useDebounce(searchValue, 500);
-  const { data: searchedPosts, isFetching: isSearchFetching } = useSearchPosts(debouncedValue);
+  const { data: searchedPosts, isFetching: isSearchFetching } =
+    useSearchPosts(debouncedValue);
 
-
-  useEffect(()=>{
-
-    if(inView && !searchValue) fetchNextPage();
-
-  },[inView,searchValue])
-
-
+  useEffect(() => {
+    if (inView && !searchValue) fetchNextPage();
+  }, [inView, searchValue]);
 
   if (!posts)
     return (
@@ -92,11 +89,18 @@ const Explore = () => {
           />
         ) : shouldShowPosts ? (
           <p className="text-light-4 mt-10 text-center w-full">End of posts</p>
-        ) : 
+        ) : (
           posts.pages.map((item, index) => (
             <GridPostList key={`page-${index}`} posts={item.documents} />
-          ))}
+          ))
+        )}
       </div>
+
+      {hasNextPage && !searchValue && (
+        <div ref={ref} className="mt-10">
+          <Loader />
+        </div>
+      )}
     </div>
   );
 };

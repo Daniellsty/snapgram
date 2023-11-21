@@ -12,7 +12,7 @@ const AllUsers = () => {
 
   if (isErrorCreators) {
     toast({ title: "Something went wrong." });
-    
+
     return;
   }
 

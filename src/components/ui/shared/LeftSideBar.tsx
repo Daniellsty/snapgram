@@ -1,4 +1,4 @@
-import  { useEffect } from "react";
+import { useEffect } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "../button";
 import { userSignOutAccount } from "@/lib/react-query/queriesAndMutation";
@@ -19,8 +19,7 @@ const LeftSideBar = () => {
     }
   }, [isSuccess]);
 
-  const {pathname} = useLocation()
-
+  const { pathname } = useLocation();
 
   return (
     <nav className="leftsidebar">
@@ -45,18 +44,21 @@ const LeftSideBar = () => {
           {sidebarLinks.map((link: INavLink) => {
             const isActive = pathname === link.route;
             return (
-              <li className={`leftsidebar-link group
-              ${isActive &&  'bg-primary-500' }
-              `} key={link.label}>
-                <NavLink 
+              <li
+                className={`leftsidebar-link group
+              ${isActive && "bg-primary-500"}
+              `}
+                key={link.label}>
+                <NavLink
                   className="flex gap-4 items-center p-4"
                   to={link.route}>
-                  <img 
-                  className={`group-hover:invert-white
-                  ${isActive && 'invert-white' } 
+                  <img
+                    className={`group-hover:invert-white
+                  ${isActive && "invert-white"} 
                 `}
-                  src={link.imgURL}
-                   alt={link.label} />
+                    src={link.imgURL}
+                    alt={link.label}
+                  />
                   {link.label}
                 </NavLink>
               </li>
@@ -65,13 +67,13 @@ const LeftSideBar = () => {
         </ul>
       </div>
 
-      <Button variant= 'ghost'
-        className='shad-button_ghost'
-        onClick={ ()=> signOut()}
-        >
-            <img src={logout} alt="logout" />
-             <span className="small-medium lg:base-medium">Logout</span>
-        </Button>
+      <Button
+        variant="ghost"
+        className="shad-button_ghost"
+        onClick={() => signOut()}>
+        <img src={logout} alt="logout" />
+        <span className="small-medium lg:base-medium">Logout</span>
+      </Button>
     </nav>
   );
 };

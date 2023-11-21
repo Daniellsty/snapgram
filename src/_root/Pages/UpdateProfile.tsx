@@ -2,7 +2,7 @@ import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate, useParams } from "react-router-dom";
-import edit from '../../assets/icons/edit.svg'
+import edit from "../../assets/icons/edit.svg";
 import {
   Form,
   FormControl,
@@ -13,7 +13,10 @@ import {
 } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
 import { ProfileValidation } from "@/lib/validation";
-import { useGetUserById, useUpdateUser } from "@/lib/react-query/queriesAndMutation";
+import {
+  useGetUserById,
+  useUpdateUser,
+} from "@/lib/react-query/queriesAndMutation";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

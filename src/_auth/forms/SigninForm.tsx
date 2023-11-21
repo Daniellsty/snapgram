@@ -18,56 +18,48 @@ import { NavLink, useNavigate } from "react-router-dom";
 
 import { useToast } from "@/components/ui/use-toast";
 
-import {  userSignInAccount } from "@/lib/react-query/queriesAndMutation";
+import { userSignInAccount } from "@/lib/react-query/queriesAndMutation";
 import { useUserContext } from "@/context/AuthContext";
 const SigninForm = () => {
   const { toast } = useToast();
-  const navigate = useNavigate()
-  const {checkAuthUser   } = useUserContext();
-  
+  const navigate = useNavigate();
+  const { checkAuthUser } = useUserContext();
+
   const form = useForm<z.infer<typeof SigninValidation>>({
     resolver: zodResolver(SigninValidation),
     defaultValues: {
-
       email: "",
       password: "",
-    },  
-  });  
-  
-    const {mutateAsync :signInAccount ,isPending : isSigningIn} =userSignInAccount();
+    },
+  });
 
+  const { mutateAsync: signInAccount, isPending: isSigningIn } =
+    userSignInAccount();
 
   async function onSubmit(values: z.infer<typeof SigninValidation>) {
     const newUser = await signInAccount(values);
-    
-    if(!newUser){
-      return toast({
-         variant: "destructive",
-         title: "sign in failed.Please try again.  ",
-        //  action: <ToastAction altText="Try again">Try again</ToastAction>, 
-       }); 
 
-    }   
-
-  
-    const isLoggedIn = await checkAuthUser();
-
-    if(isLoggedIn) {
-      form.reset();
-      
-      navigate('/')
-    }else{
+    if (!newUser) {
       return toast({
         variant: "destructive",
         title: "sign in failed.Please try again.  ",
-     
-      }); 
+        //  action: <ToastAction altText="Try again">Try again</ToastAction>,
+      });
     }
 
+    const isLoggedIn = await checkAuthUser();
 
+    if (isLoggedIn) {
+      form.reset();
 
-  }    
-
+      navigate("/");
+    } else {
+      return toast({
+        variant: "destructive",
+        title: "sign in failed.Please try again.  ",
+      });
+    }
+  }
 
   return (
     <Form {...form}>
@@ -80,8 +72,6 @@ const SigninForm = () => {
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-8 flex flex-5 w-full mt-4 flex-col">
-          
-
           <FormField
             control={form.control}
             name="email"
@@ -122,7 +112,7 @@ const SigninForm = () => {
             )}
           </Button>
           <p className="text-small-regular text-light-2 text-center mt-2">
-            Don't  have an account ?
+            Don't have an account ?
             <NavLink
               className="text-primary-500 text-small-semibold ml-1"
               to={"/Sign-up"}>

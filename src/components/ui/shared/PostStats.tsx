@@ -62,13 +62,12 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
 
     if (savedPostRecord) {
       setIsSaved(false);
-    return deleteSavedPost(savedPostRecord.$id);
-    } 
+      return deleteSavedPost(savedPostRecord.$id);
+    }
     // savePost({ postId: post?.$id || "", userId });
     savePost({ userId: userId, postId: post?.$id });
     setIsSaved(true);
   };
-
 
   return (
     <div className="flex justify-between items-center z-20 ">

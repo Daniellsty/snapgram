@@ -313,76 +313,72 @@ export async function getPostById(postId:string){
 }
 
 export async function updatePost(post: IUpdatePost) {
-    const hasFileToUpdate = post.file.length > 0;
+  const hasFileToUpdate = post.file.length > 0;
 
-    try {
+  try {
+    let image = {
+      imageUrl: post.imageUrl,
+      imageId: post.imageId,
+    };
 
-      let image ={
-        imageUrl :post.imageUrl,
-        imageId: post.imageId
-      };
+    if (hasFileToUpdate) {
+      // Upload new file to appwrite storage
+      const uploadedFile = await uploadFile(post.file[0]);
+      if (!uploadedFile) throw Error;
 
-      if(hasFileToUpdate){
-          
-                const uploadedFile = await uploadFile(post.file[0]);
-          
-                if (!uploadedFile) throw Error;
-
-                const fileUrl = getFilePreviw(uploadedFile.$id)
-                if(!fileUrl) {
-          
-                    await deleteFile(uploadedFile.$id)
-                    throw Error;
-                } 
-
-                image ={...image,imageUrl:fileUrl,imageId:uploadedFile.$id}
-      }
-
-
-      // covenrt tags into array 
-
-      const tags = post.tags?.replace(/ /g, "").split(",") || [];
-
-      const updatedPost = await databases.updateDocument(
-  
-        appwriteConfig.databaseId,
-        appwriteConfig.postsCollectionId,
-       post.postId,
-        {
-          
-            caption:post.caption,
-            imageUrl:image.imageUrl,
-            imageId:image.imageId,
-            location:post.location,
-            tags:tags
-
-        }
-      );
-
-      if (!updatedPost){
-
-        if(hasFileToUpdate){
-
-          await deleteFile(image.imageId)
-        }
+      // Get new file url
+      const fileUrl = getFilePreviw(uploadedFile.$id);
+      if (!fileUrl) {
+        await deleteFile(uploadedFile.$id);
         throw Error;
       }
 
-      if(hasFileToUpdate){
-        await deleteFile(post.imageId)
+      image = { ...image, imageUrl: fileUrl, imageId: uploadedFile.$id };
+    }
 
+    // Convert tags into array
+    const tags = post.tags?.replace(/ /g, "").split(",") || [];
+
+    //  Update post
+    const updatedPost = await databases.updateDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.postsCollectionId,
+      post.postId,
+      {
+        caption: post.caption,
+        imageUrl: image.imageUrl,
+        imageId: image.imageId,
+        location: post.location,
+        tags: tags,
+      }
+    );
+
+    // Failed to update
+    if (!updatedPost) {
+      // Delete new file that has been recently uploaded
+      if (hasFileToUpdate) {
+        await deleteFile(image.imageId);
       }
 
-      return updatePost;
-  
-    } catch (error) {
-      console.log(error);
+      // If no new file uploaded, just throw error
+      throw Error;
     }
+
+    // Safely delete old file after successful update
+    if (hasFileToUpdate) {
+      await deleteFile(post.imageId);
+    }
+
+    return updatedPost;
+  } catch (error) {
+    console.log(error);
   }
+}
+
 
   type deletePostType={
-    postId:string,
-    imageId : string
+    postId?:string,
+    imageId? : string  ,
   }
 
   export async function deletePost({postId, imageId} :deletePostType ) {
@@ -410,29 +406,27 @@ export async function updatePost(post: IUpdatePost) {
     }
   }
 
-export async function getInfinitePosts( {pageParam} :{pageParam:number} ){
-
-    const queries :any[] = [Query.orderDesc('$updatedAt'),Query.limit(9)];
-
-    if(pageParam){
-        queries.push(Query.cursorAfter(pageParam.toString()));
+  export async function getInfinitePosts({ pageParam }: { pageParam: number }) {
+    const queries: any[] = [Query.orderDesc("$updatedAt"), Query.limit(9)];
+  
+    if (pageParam) {
+      queries.push(Query.cursorAfter(pageParam.toString()));
     }
-
+  
     try {
-        const posts = await databases.listDocuments(
-            appwriteConfig.databaseId,
-            appwriteConfig.postsCollectionId,
-            queries
-        )
-        if(!posts) throw Error;
-
-        return posts;
+      const posts = await databases.listDocuments(
+        appwriteConfig.databaseId,
+        appwriteConfig.postsCollectionId,
+        queries
+      );
+  
+      if (!posts) throw Error;
+  
+      return posts;
     } catch (error) {
-        console.log(error);
-        
+      console.log(error);
     }
-
-}
+  }
 
 export async function searchPosts(searchTerm:string ){
 

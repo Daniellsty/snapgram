@@ -1,7 +1,6 @@
 import { useGetByPostById } from "@/lib/react-query/queriesAndMutation";
 import { multiFormatDateString } from "@/lib/utils";
 
-import React from "react";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
 import profile from "../../assets/icons/profile-placeholder.svg";
 import edit from "../../assets/icons/edit.svg";
@@ -16,17 +15,15 @@ const PostDetail = () => {
   const { data: post, isPending } = useGetByPostById(id || "");
   const { user } = useUserContext();
 
-  
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleDeletePost = () => {
-    deletePost( {
-      postId: id, 
-      imageId: post.imageId,
-    } );
+    deletePost({
+      postId: id,
+      imageId: post?.imageId,
+    });
 
-    
-    window.location.reload()
+    window.location.reload();
     navigate(-1);
     // window.location.reload()
   };
@@ -36,9 +33,7 @@ const PostDetail = () => {
       {isPending ? (
         <Loader />
       ) : (
-        
         <div className="post_details-card">
-          
           <img className="post_details-img" src={post?.imageUrl} alt="post" />
 
           <div className="post_details-info">
@@ -99,7 +94,7 @@ const PostDetail = () => {
             </div>
 
             <div className="w-full ">
-                  <PostStats post={post} userId={user.id}/>
+              <PostStats post={post} userId={user.id} />
             </div>
           </div>
         </div>
