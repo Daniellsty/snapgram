@@ -19,7 +19,7 @@ const GridPostList = ({posts,showUser=true,showStats=true}:GridPostListProps) =>
     <ul className='grid-container'>
 
        
-        {posts.map((post)=>{
+        {posts && posts.map((post)=>{
          
             
         return(
@@ -41,8 +41,8 @@ const GridPostList = ({posts,showUser=true,showStats=true}:GridPostListProps) =>
                     <div className='flex items-center justify-start gap-2 flex-1'>
                         <img 
                         className='h-8 w-8 rounded-full'
-                        src={post.creator.imageUrl} alt="post" />
-                        <p className='line-clamp-1'>{post.creator.name}</p>
+                        src={post?.creator?.imageUrl} alt="post" />
+                        <p className='line-clamp-1'>{post?.creator?.name}</p>
                     </div>
                 ) }
 
